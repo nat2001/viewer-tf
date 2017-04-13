@@ -23,7 +23,8 @@
 // viewdata browser I need to do myself.
 
 
-
+// Todo: Hex page numbers.
+// Todo: add carouselIndex to hash
 
 /**
  *
@@ -121,6 +122,14 @@ var _viewer_loadfromwebpage = function()
 	var links = document.getElementsByTagName("a");
 	var firstpage;
 
+	if( window.location.hash ) {
+		pagenumber = window.location.hash.substring(1,4);
+		if (parseInt(pagenumber)) {
+			firstpage = pagenumber;
+		}
+	}
+
+
 	for (var i=0, max=links.length; i < max; i++)
 	{
 		var pagecontent = links[i].href;
@@ -155,6 +164,9 @@ var _viewer_loadfromwebpage = function()
 
 	// Navigate to the first page
 	_viewer_activepagenumber = firstpage;
+	// set in url
+	window.location.hash = _viewer_activepagenumber;
+
 	// Display the page
 	_viewer_displayactivepage();
 }
@@ -189,6 +201,8 @@ this._viewer_keypress = function(code)
 			{
 				// Remember which page we're on
 				_viewer_activepagenumber = _viewer_newpagenumber;
+				// set in url
+				window.location.hash = _viewer_activepagenumber;
 				// Show the page number
 				_viewer_showpagenumber(_viewer_activepagenumber);
 				// Show the page (delayed so that the page number appears immediately)
@@ -229,6 +243,8 @@ this._viewer_keydown = function(code)
 	{
 		// Move to the appropriate page
 		_viewer_activepagenumber = _viewer_getadjacentpagenumber(_viewer_activepagenumber, (code == 38 ? 1 : -1));
+		// set in url
+		window.location.hash = _viewer_activepagenumber;
 		// Reset the carousel
 		_viewer_resetcarousel(_viewer_activepagenumber);
 		// Show the page number
