@@ -165,7 +165,7 @@ var m_fastext_index = 0;
 // Initialises the state of the screen.
 this.init_state = function() {
 
-	this.init_canvas();
+	editor_this.init_canvas();
 
 	// Set up the arrays...
 	for (var r = 0; r <= 24; r++) {
@@ -195,9 +195,7 @@ this.init_canvas = function() {
 	var width = 480; var height = 540;
 	if ( statushidden == 1 ) { height = 500; }
 
-console.log (this.canvasid);
-
-	var c = document.getElementById(this.canvasid);
+	var c = document.getElementById(editor_this.canvasid);
 	// set the 'logical' width and height, the code is designed for 480x520,
 	// scaled up to look better when zoomed in
 	c.width = width*pix_scale;
@@ -631,7 +629,7 @@ var click_listener = function(event, state) {
     // Compute the position of the canvas.
     var offsetx = 0;
     var offsety = 0;
-    var frame_element = document.getElementById(this.canvasid);
+    var frame_element = document.getElementById(editor_this.canvasid);
 
     // Step up through the frame's parents and accumulate their
     // contribution to the offset.
@@ -660,7 +658,7 @@ var click_listener = function(event, state) {
 
 // Sets up the listeners for the mouse.
 this.init_mouse = function() {
-	var canvas = document.getElementById(this.canvasid);
+	var canvas = document.getElementById(editor_this.canvasid);
 
 	// What happens when the mouse button is clicked ...
 	canvas.addEventListener("mousedown", function (e) {
@@ -1188,7 +1186,7 @@ var draw_status_bar = function() {
 	// There is nothing to draw if the status bar has been hidden.
 	if ( statushidden != 0 ) { return; }
 
-	var c = document.getElementById(this.canvasid);
+	var c = document.getElementById(editor_this.canvasid);
 	var ctx = c.getContext("2d");
 
 	// If we're in escape mode, colour the status bar to make it clear.
@@ -1402,7 +1400,7 @@ var unhide_status_bar = function() {
 		// Because this is likely to be used for editing, return
 		// to the full underlying resolution.
 		pix_scale = full_pix_scale;
-		this.init_canvas();
+		editor_this.init_canvas();
 		editor_this.render(0,0,40,25,0);
 		draw_status_bar();
 	}
@@ -1415,7 +1413,7 @@ var hide_status_bar = function() {
 		// Because this is likely to be used for a screen shot,
 		// reduce the underlying resolution.
 		pix_scale = 1;
-		this.init_canvas();
+		editor_this.init_canvas();
 		editor_this.render(0,0,40,25,0);
 	}
 }
@@ -1644,7 +1642,7 @@ this.keypress = function(event) {
 			current_ratio--;
 			if ( current_ratio < 0 ) { current_ratio = 0; }
 			aspect_ratio = aspect_ratios[current_ratio];
-			this.init_canvas();
+			editor_this.init_canvas();
 			editor_this.render(0,0,40,25,0);
 		}
 
@@ -1655,7 +1653,7 @@ this.keypress = function(event) {
 				current_ratio = aspect_ratios.length - 1;
 			}
 			aspect_ratio = aspect_ratios[current_ratio];
-			this.init_canvas();
+			editor_this.init_canvas();
 			editor_this.render(0,0,40,25,0);
 		}
 
@@ -3096,7 +3094,7 @@ editor_this.render = function(x, y, w, h) {
 	// we should do this only when there's been a change.
 	save_to_hash();
 
-	var c = document.getElementById(this.canvasid);
+	var c = document.getElementById(editor_this.canvasid);
 	var ctx = c.getContext("2d");
 
 	// Clear the rectangle.
@@ -4750,7 +4748,7 @@ var draw_help_screen = function() {
 		"Licenced under GPL v3.0, https://github.com/rawles/edit-tf"
 	];
 
-	var c = document.getElementById(this.canvasid);
+	var c = document.getElementById(editor_this.canvasid);
 	var ctx = c.getContext("2d");
 
 	ctx.font = (13*pix_scale)+"px Arial";
@@ -4789,7 +4787,7 @@ var show_help_screen = function() {
 	if ( helpscreenshown != 1 ) {
 		helpscreenshown = 1;
 
-		this.init_canvas();
+		editor_this.init_canvas();
 		draw_help_screen();
 		draw_status_bar();
 	}
@@ -4799,7 +4797,7 @@ var hide_help_screen = function() {
 	if ( helpscreenshown == 1 ) {
 		helpscreenshown = 0;
 
-		this.init_canvas();
+		editor_this.init_canvas();
 		editor_this.render(0,0,40,25,0);
 		draw_status_bar();
 	}
@@ -4837,14 +4835,14 @@ this.is_all_spaces = function() {
 //////////////////////////
 
 this.init_frame = function(id) {
-	this.canvasid = id;
+	editor_this.canvasid = id;
 
 	// Set up the screen and render it.
-	init_state();
+	editor_this.init_state();
 	editor_this.render(0, 0, 40, 25, 0);
 
 	// Set up listeners for events
-	this.init_mouse();
+	editor_this.init_mouse();
 	document.onkeypress = page_keypress;
 	document.onkeydown = page_keydown;
 }
@@ -5288,7 +5286,6 @@ this.keydown = function(event) {
 
 
 }
-
 
 
 
