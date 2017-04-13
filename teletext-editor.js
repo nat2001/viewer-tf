@@ -16,11 +16,10 @@
 // through which recipients can access the Corresponding Source.
 
 // Modified 2017/04/12 By Rob O'Donnell as part of Retrochallenge 2017/04
-// to split the "Editor" and "Display" functions, in order to make the
-// Display section useable by alternative applications, e.g. an updated
-// version of Adam Dawes teletext viewer, without need for it being
-// "mercilessly and messily hacked about" :-D.  And the viewdata browser
-// I need to do myself.
+// to make the Editor's displayfacilties useable by alternative applications,
+// e.g. an updated version of Adam Dawes teletext viewer, without need for
+// it being "mercilessly and messily hacked about" :-D.  And for the
+// viewdata browser I need to do myself.
 
 
 
@@ -5286,6 +5285,5 @@ this.keydown = function(event) {
 
 
 }
-
 
 
