@@ -22,6 +22,7 @@
 // it being "mercilessly and messily hacked about" :-D.  And for the
 // viewdata browser I need to do myself.
 
+
 // Todo: Hex page numbers.
 // Todo: add carouselIndex to hash
 
@@ -48,12 +49,8 @@
           viewer._viewer_setuserpageoffset(3);
           // Set the time display offset and format
           viewer._viewer_settimeformat(32, 'h:m/s');
-	          // Load all pages from this html page
-    	      viewer._viewer_loadpages();
-    	  OR
-    	      // specify page collection for ajax calls.
-    	  	  viewer._viewer_set_source('collection')
-
+          // Load all pages from this html page
+          viewer._viewer_loadpages();
        }
 */
 
@@ -79,9 +76,6 @@ var _viewer_userpageoffset = 0;
 var _viewer_timeoffset = 32;
 var _viewer_timeformat = '';	// No format = time display disabled
 var _viewer_timeupdaterunning = false;
-
-var _ajax = false;		// fetch pages from server
-var _collection = '';	// collection to fetch from.
 
 //////
 // VIEWER: Initialise the user page number display position
@@ -178,67 +172,6 @@ var _viewer_loadfromwebpage = function()
 }
 
 
-///////
-this._viewer_set_source = function($col) {
-
-	var firstpage;
-
-	_collection = $col;
-	_ajax = true;
-
-
-
-	if( window.location.hash ) {
-		pagenumber = window.location.hash.substring(1,4);
-		if (parseInt(pagenumber)) {
-			firstpage = pagenumber;
-		}
-	}
-
-
-	var ret = loadJSON('viewer_ajaxgetpage.php?col=' + _collection + '&pn=*');
-
-	pages = ret['pages'];
-
-	for (var key in pages)
-	{
-		if (pages.hasOwnProperty(key)) {
-			var pagenumber = key.substr(0,3);
-//			if (parseInt(pagenumber))
-			{
-				//_viewer_loaded_pages.push({pagenumber: pagenumber, pagecontent: pagecontent});
-				// Does this page number already exist?
-				if (!_viewer_loaded_pages[pagenumber])
-				{
-					// No, so initialise it now
-					_viewer_loaded_pages[pagenumber] = {carouselindex: 0, pagecontent: []};
-
-					// Add empty  page content
-					for (i =0; i<pages[key]; i++) {
-						_viewer_loaded_pages[pagenumber].pagecontent.push('x');
-					}
-		}
-				// Add to the page numbers if not already present
-				if (_viewer_loaded_pagenumbers.length == 0 || _viewer_loaded_pagenumbers[_viewer_loaded_pagenumbers.length-1] != pagenumber)
-				{
-					_viewer_loaded_pagenumbers.push(pagenumber);
-				}
-	console.log(pagenumber);
-
-				// Remember the first page
-				if (!firstpage) firstpage = pagenumber;
-			}
-		}
-	}
-
-	// Navigate to the first page
-	_viewer_activepagenumber = firstpage;
-	// set in url
-	window.location.hash = _viewer_activepagenumber;
-
-}
-
-
 //////
 // VIEWER: Process keypress events
 //////
@@ -273,7 +206,7 @@ this._viewer_keypress = function(code)
 				// Show the page number
 				_viewer_showpagenumber(_viewer_activepagenumber);
 				// Show the page (delayed so that the page number appears immediately)
-				setTimeout(_viewer_displayactivepage, 5);
+				setTimeout(_viewer_displayactivepage, 50);
 			}
 			else
 			{
@@ -367,14 +300,6 @@ var _viewer_getloadedpage = function(pagenumber)
 	var loadedpage = _viewer_loaded_pages[pagenumber.toString()];
 	if (loadedpage)
 	{
-		if (_ajax && loadedpage.pagecontent[loadedpage.carouselindex] == 'x') {
-			if (loadedpage.carouselindex) {
-				pagenumber = pagenumber.toString() + '&sp=' + loadedpage.carouselindex.toString();
-			}
-			var page = loadJSON('viewer_ajaxgetpage.php?col=' + _collection + '&tt=' + pagenumber.toString());
-			loadedpage.pagecontent[loadedpage.carouselindex] = page['image'];
-		}
-
 		// Yes, return the sub-page
 		return loadedpage.pagecontent[loadedpage.carouselindex];
 	}
@@ -524,36 +449,6 @@ this.keydown = function(event) {
 	return;
 }
 
-
-// From http://stackoverflow.com/a/4117299
-// Load JSON text from server hosted file and return JSON parsed object
-function loadJSON(filePath) {
-  // Load json file;
-  var json = loadTextFileAjaxSync(filePath, "application/json");
-  // Parse json
-  return JSON.parse(json);
-}
-
-// Load text with Ajax synchronously: takes path to file and optional MIME type
-function loadTextFileAjaxSync(filePath, mimeType)
-{
-  var xmlhttp=new XMLHttpRequest();
-  xmlhttp.open("GET",filePath,false);
-  if (mimeType != null) {
-    if (xmlhttp.overrideMimeType) {
-      xmlhttp.overrideMimeType(mimeType);
-    }
-  }
-  xmlhttp.send();
-  if (xmlhttp.status==200)
-  {
-    return xmlhttp.responseText;
-  }
-  else {
-    // TODO Throw exception
-    return null;
-  }
-}
 
 
 }
