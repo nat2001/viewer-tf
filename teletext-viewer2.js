@@ -134,9 +134,11 @@ var _viewer_loadfromwebpage = function()
 	{
 		var pagecontent = links[i].href;
 		var pagenumber = links[i].innerHTML;
+		var data = links[i].dataset;
 		// Does this look like it contains page content?
 		if (parseInt(pagenumber) && pagecontent.indexOf('#') >= 0)
 		{
+			console.log("loading page "+pagenumber);
 			// Strip the URL part so we get just the encoded content
 			pagecontent = pagecontent.substring(pagecontent.indexOf('#'));
 			//alert(pagenumber);
@@ -146,7 +148,7 @@ var _viewer_loadfromwebpage = function()
 			if (!_viewer_loaded_pages[pagenumber])
 			{
 				// No, so initialise it now
-				_viewer_loaded_pages[pagenumber] = {carouselindex: 0, pagecontent: []};
+				_viewer_loaded_pages[pagenumber] = {carouselindex: 0, pagecontent: [], data:data};
 			}
 			// Add the page content
 			_viewer_loaded_pages[pagenumber].pagecontent.push(pagecontent);
@@ -171,7 +173,33 @@ var _viewer_loadfromwebpage = function()
 	_viewer_displayactivepage();
 }
 
+var _viewer_changepage = function() 
+{
 
+	// Reset the carousel
+	_viewer_resetcarousel(_viewer_newpagenumber);
+	// Load the selected page, if found
+	var pagecontent = _viewer_getloadedpage(_viewer_newpagenumber);
+	if (pagecontent != '')
+	{
+		// Remember which page we're on
+		_viewer_activepagenumber = _viewer_newpagenumber;
+		// set in url
+		window.location.hash = _viewer_activepagenumber;
+		// Show the page number
+		_viewer_showpagenumber(_viewer_activepagenumber);
+		// Show the page (delayed so that the page number appears immediately)
+		setTimeout(_viewer_displayactivepage, 50);
+	}
+	else
+	{
+		console.log('page not found');
+	}
+
+	// reset input
+	_viewer_nextpos = 0;
+	_viewer_newpagenumber = 0;
+}
 //////
 // VIEWER: Process keypress events
 //////
@@ -179,7 +207,31 @@ this._viewer_keypress = function(code)
 {
 	curx = _viewer_nextpos;
 	cury = 0;
-
+	console.log(code);
+	if ( code == 104 ) // h
+	{
+		console.log(_viewer_loaded_pages[_viewer_activepagenumber].data);
+		_viewer_newpagenumber = _viewer_loaded_pages[_viewer_activepagenumber].data["red"];
+		_viewer_changepage();
+	}
+	if ( code == 106 ) // j
+	{
+		console.log(_viewer_loaded_pages[_viewer_activepagenumber].data);
+		_viewer_newpagenumber = _viewer_loaded_pages[_viewer_activepagenumber].data["green"];
+		_viewer_changepage();
+	}
+	if ( code == 107 ) // k
+	{
+		console.log(_viewer_loaded_pages[_viewer_activepagenumber].data);
+		_viewer_newpagenumber = _viewer_loaded_pages[_viewer_activepagenumber].data["yellow"];
+		_viewer_changepage();
+	}
+	if ( code == 108 ) // l
+	{
+		console.log(_viewer_loaded_pages[_viewer_activepagenumber].data);
+		_viewer_newpagenumber = _viewer_loaded_pages[_viewer_activepagenumber].data["blue"];
+		_viewer_changepage();
+	}
 	if ( code >= 48 && code <= 57 ) // this is a numeric character...
 	{
 		// Add the digit to the page number
@@ -193,31 +245,11 @@ this._viewer_keypress = function(code)
 		// Have we entered a full page number?
 		if (_viewer_nextpos == 3)
 		{
-			// Reset the carousel
-			_viewer_resetcarousel(_viewer_newpagenumber);
-			// Load the selected page, if found
-			var pagecontent = _viewer_getloadedpage(_viewer_newpagenumber);
-			if (pagecontent != '')
-			{
-				// Remember which page we're on
-				_viewer_activepagenumber = _viewer_newpagenumber;
-				// set in url
-				window.location.hash = _viewer_activepagenumber;
-				// Show the page number
-				_viewer_showpagenumber(_viewer_activepagenumber);
-				// Show the page (delayed so that the page number appears immediately)
-				setTimeout(_viewer_displayactivepage, 50);
-			}
-			else
-			{
-				alert('page not found');
-			}
-
-			// reset input
-			_viewer_nextpos = 0;
-			_viewer_newpagenumber = 0;
+			_viewer_changepage();
 		}
 	}
+	
+
 
 }
 
@@ -428,7 +460,7 @@ this.init_frame = function(id) {
 	editor.render(0, 0, 40, 25, 0);
 
 	// Set up listeners for events
-	editor.init_mouse();
+	//editor.init_mouse();
 	document.onkeypress = this.keypress; //page_keypress;
 	document.onkeydown = this.keydown; //page_keydown;
 }
